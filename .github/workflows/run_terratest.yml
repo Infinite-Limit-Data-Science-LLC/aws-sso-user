@@ -1,0 +1,44 @@
+name: Terraform Continuous Integration
+
+on: [push,pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3  
+      - name: run terratest
+        run: |
+          cd test
+          go test -v -timeout 30m
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: lint terraform code
+        run: echo 'Not Yet Implemented'
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        with:
+          semantic_version: 16
+          branches: |
+            [
+              '+([0-9])?(.{+([0-9]),x}).x',
+              'main',
+              'next',
+              'next-major',
+              {
+                name: 'beta',
+                prerelease: true
+              },
+              {
+                name: 'alpha',
+                prerelease: true
+              }
+            ]
